@@ -19,6 +19,21 @@ from services.orchestrator import IndexResult, DetailResult
 from scrapers.rate_limiter import get_rate_limiter
 
 
+# Proxies résidentiels FR pour bypass DataDome
+RESIDENTIAL_PROXIES = [
+    "http://aigrinchxyz:8jqb7dml-country-FR-hardsession-f994hiwl-duration-60@resi.thexyzstore.com:8000",
+    "http://aigrinchxyz:8jqb7dml-country-FR-hardsession-q2r6263u-duration-60@resi.thexyzstore.com:8000",
+    "http://aigrinchxyz:8jqb7dml-country-FR-hardsession-1n4t8nkg-duration-60@resi.thexyzstore.com:8000",
+    "http://aigrinchxyz:8jqb7dml-country-FR-hardsession-jp6c4ji7-duration-60@resi.thexyzstore.com:8000",
+    "http://aigrinchxyz:8jqb7dml-country-FR-hardsession-xkcvd8ij-duration-60@resi.thexyzstore.com:8000",
+    "http://aigrinchxyz:8jqb7dml-country-FR-hardsession-zmc3hkqd-duration-60@resi.thexyzstore.com:8000",
+    "http://aigrinchxyz:8jqb7dml-country-FR-hardsession-r76z9e9l-duration-60@resi.thexyzstore.com:8000",
+    "http://aigrinchxyz:8jqb7dml-country-FR-hardsession-kx0zahrb-duration-60@resi.thexyzstore.com:8000",
+    "http://aigrinchxyz:8jqb7dml-country-FR-hardsession-5cgx9vhl-duration-60@resi.thexyzstore.com:8000",
+    "http://aigrinchxyz:8jqb7dml-country-FR-hardsession-o87lqgdd-duration-60@resi.thexyzstore.com:8000",
+]
+
+
 @dataclass
 class LeboncoinConfig:
     """Configuration pour les recherches LeBoncoin"""
@@ -65,9 +80,19 @@ class LeboncoinCurlScraper:
         "fiat": "FIAT",
     }
     
-    def __init__(self, config: LeboncoinConfig = None):
+    def __init__(self, config: LeboncoinConfig = None, use_proxy: bool = True):
         self.config = config or LeboncoinConfig()
         self._rate_limiter = get_rate_limiter()
+        self._use_proxy = use_proxy
+        self._proxy_index = 0
+    
+    def _get_next_proxy(self) -> Optional[str]:
+        """Retourne le prochain proxy en rotation"""
+        if not self._use_proxy or not RESIDENTIAL_PROXIES:
+            return None
+        proxy = RESIDENTIAL_PROXIES[self._proxy_index % len(RESIDENTIAL_PROXIES)]
+        self._proxy_index += 1
+        return proxy
     
     async def close(self):
         pass
@@ -124,11 +149,15 @@ class LeboncoinCurlScraper:
         return f"{self.BASE_URL}/recherche?{'&'.join(params)}"
     
     def _fetch_sync(self, url: str) -> Optional[str]:
-        """Fetch synchrone avec curl-cffi"""
+        """Fetch synchrone avec curl-cffi + proxy résidentiel"""
+        proxy = self._get_next_proxy()
+        proxies = {"http": proxy, "https": proxy} if proxy else None
+        
         try:
             response = curl_requests.get(
                 url,
                 impersonate="chrome",
+                proxies=proxies,
                 timeout=30,
             )
             if response.status_code == 200:
