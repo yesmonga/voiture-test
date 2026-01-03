@@ -1,0 +1,121 @@
+# Configuration des recherches à exécuter
+# Chaque entrée définit une recherche sur une source avec ses critères
+
+# Paramètres globaux de scan
+defaults:
+  detail_threshold: 30
+  notify_threshold: 60
+  scan_interval_sec: 60
+  jitter_sec: 10  # ±10s de variation aléatoire
+  backoff_multiplier: 2  # Multiplicateur en cas de blocage
+  backoff_max_sec: 300  # Max 5 minutes de backoff
+
+# Sources disponibles et leur état
+# AUTOSCOUT24: ✅ Production-ready
+# LACENTRALE: ✅ Production-ready  
+# PARUVENDU: ✅ Production-ready
+# LEBONCOIN: ⚠️ Skeleton (anti-bot trop agressif)
+# MARKETPLACE: ⚠️ Skeleton (nécessite login Facebook)
+
+searches:
+  # Peugeot 207 1.4 HDi 70ch - CIBLE PRINCIPALE FLIPPING
+  # Scan sur TOUTES les sources actives
+  - name: "peugeot_207_14_hdi_70"
+    enabled: true
+    # Multi-sources: liste des sources à scanner
+    # Note: lacentrale/paruvendu nécessitent Playwright (JS rendering)
+    sources:
+      - autoscout24
+      # - lacentrale  # TODO: Playwright
+      # - paruvendu   # TODO: Playwright
+    marque: "Peugeot"
+    modele: "207"
+    motorisation: "1.4 hdi 70"  # Pour référence
+    prix_min: 0
+    prix_max: 2000
+    km_min: 150000
+    km_max: 180000
+    annee_min: 2006
+    annee_max: 2014
+    carburant: "diesel"
+    particulier_only: true
+    zip_code: ""  # Vide = toute la France
+    radius_km: 0  # 0 = pas de filtre géographique
+    # Seuils de scoring
+    detail_threshold: 30
+    notify_threshold: 60
+    max_pages: 2
+    # Stratégie flipping light
+    target_margin: 500  # Plus-value visée
+    max_repair_budget: 300  # Budget réparations légères
+
+  # Peugeot 207 HDi - Recherche élargie (backup)
+  - name: "peugeot_207_hdi_large"
+    enabled: false  # Désactivé par défaut
+    source: "autoscout24"
+    marque: "Peugeot"
+    modele: "207"
+    prix_min: 500
+    prix_max: 3000
+    km_max: 200000
+    annee_min: 2006
+    annee_max: 2014
+    carburant: "diesel"
+    particulier_only: true
+    zip_code: ""
+    radius_km: 0
+    detail_threshold: 30
+    notify_threshold: 60
+    max_pages: 2
+
+  # Renault Clio 3 dCi - Pour plus tard
+  - name: "renault_clio3_dci"
+    enabled: false  # Désactivé, focus sur 207
+    source: "autoscout24"
+    marque: "Renault"
+    modele: "Clio"
+    prix_min: 500
+    prix_max: 2500
+    km_min: 150000
+    km_max: 180000
+    annee_min: 2008
+    annee_max: 2014
+    carburant: "diesel"
+    particulier_only: true
+    zip_code: ""
+    radius_km: 0
+    detail_threshold: 30
+    notify_threshold: 60
+    max_pages: 2
+
+  # Citroën C3 HDi
+  - name: "citroen_c3_hdi"
+    enabled: false  # Désactivé pour l'instant
+    source: "autoscout24"
+    marque: "Citroen"
+    modele: "C3"
+    prix_min: 1000
+    prix_max: 3000
+    km_max: 160000
+    annee_min: 2010
+    annee_max: 2016
+    carburant: "diesel"
+    particulier_only: true
+    zip_code: "75001"
+    radius_km: 150
+    detail_threshold: 30
+    notify_threshold: 60
+    max_pages: 1
+
+# Configuration globale du runner
+runner:
+  # Limites par run (anti-spam)
+  max_detail_per_run: 10
+  max_notifications_per_run: 5
+  
+  # Rate limiting
+  delay_between_searches_sec: 5
+  
+  # Alertes
+  alert_on_zero_listings: true
+  zero_listings_threshold: 3  # Alerte après N runs sans résultats

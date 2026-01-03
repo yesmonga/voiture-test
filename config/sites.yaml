@@ -1,0 +1,146 @@
+# Configuration des sites sources
+# Rate limits, endpoints, et paramètres spécifiques
+
+sites:
+  autoscout24:
+    name: "AutoScout24"
+    enabled: true
+    base_url: "https://www.autoscout24.fr"
+    # Rate limiting (respectueux des serveurs)
+    rate_limit:
+      requests_per_minute: 10
+      min_delay_seconds: 3
+      max_delay_seconds: 8
+      jitter: true
+    # Circuit breaker
+    circuit_breaker:
+      error_threshold: 5
+      window_seconds: 300
+      cooldown_seconds: 600
+    # Endpoints
+    endpoints:
+      search: "/lst/{marque}/{modele}"
+      detail: "/annonces/{id}"
+    # Paramètres de recherche
+    search_params:
+      country: "F"
+      type: "C"  # Voitures
+      sort: "age"
+      order: "desc"
+    # Headers spécifiques
+    headers:
+      Accept-Language: "fr-FR,fr;q=0.9"
+    # Parsing
+    selectors:
+      listing_container: "article"
+      title: "h2"
+      price: "[data-testid='price']"
+      # Fallbacks
+      price_fallback: "span:contains('€')"
+    notes: "Site le plus fiable avec proxies FR"
+
+  leboncoin:
+    name: "LeBoncoin"
+    enabled: true
+    base_url: "https://www.leboncoin.fr"
+    # Rate limiting strict (protection anti-bot forte)
+    rate_limit:
+      requests_per_minute: 4
+      min_delay_seconds: 10
+      max_delay_seconds: 20
+      jitter: true
+    circuit_breaker:
+      error_threshold: 3
+      window_seconds: 300
+      cooldown_seconds: 1800  # 30 min pause si problème
+    endpoints:
+      search: "/recherche"
+      detail: "/ad/voitures/{id}"
+    search_params:
+      category: 2  # Voitures
+      owner_type: "private"
+      sort: "time"
+      order: "desc"
+    headers:
+      Accept-Language: "fr-FR,fr;q=0.9"
+    # Nécessite Playwright (JS rendering)
+    requires_browser: true
+    selectors:
+      listing_container: "a[data-qa-id='aditem_container']"
+      title: "[data-qa-id='aditem_title']"
+      price: "[data-qa-id='aditem_price']"
+      location: "[data-qa-id='aditem_location']"
+    notes: "Protection anti-bot forte, utiliser Playwright + proxies"
+
+  lacentrale:
+    name: "LaCentrale"
+    enabled: false  # Désactivé - Cloudflare
+    base_url: "https://www.lacentrale.fr"
+    rate_limit:
+      requests_per_minute: 6
+      min_delay_seconds: 5
+      max_delay_seconds: 12
+      jitter: true
+    circuit_breaker:
+      error_threshold: 3
+      window_seconds: 300
+      cooldown_seconds: 1200
+    endpoints:
+      search: "/listing"
+      detail: "/auto-occasion-annonce-{id}.html"
+    requires_browser: true
+    notes: "Cloudflare protection - difficile à scraper"
+
+  paruvendu:
+    name: "ParuVendu"
+    enabled: false  # Structure HTML instable
+    base_url: "https://www.paruvendu.fr"
+    rate_limit:
+      requests_per_minute: 8
+      min_delay_seconds: 4
+      max_delay_seconds: 10
+      jitter: true
+    circuit_breaker:
+      error_threshold: 5
+      window_seconds: 300
+      cooldown_seconds: 600
+    endpoints:
+      search: "/voiture-occasion/annonces"
+      detail: "/voiture-occasion/annonce/{id}"
+    notes: "Structure HTML changeante"
+
+# Configuration globale HTTP
+http:
+  # User-Agents réalistes (rotation)
+  user_agents:
+    - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    - "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0"
+    - "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15"
+    - "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+  
+  # Headers par défaut
+  default_headers:
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+    Accept-Encoding: "gzip, deflate, br"
+    Connection: "keep-alive"
+    Upgrade-Insecure-Requests: "1"
+    Sec-Fetch-Dest: "document"
+    Sec-Fetch-Mode: "navigate"
+    Sec-Fetch-Site: "none"
+    Sec-Fetch-User: "?1"
+  
+  # Timeouts
+  connect_timeout: 10
+  read_timeout: 30
+  
+  # Retry
+  max_retries: 3
+  retry_delay: 5
+
+# Proxies résidentiels FR
+proxies:
+  enabled: true
+  rotation: true
+  # Les URLs sont dans .env ou config/proxies.txt
+  # Format: http://user:pass@host:port

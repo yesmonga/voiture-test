@@ -1,0 +1,26 @@
+[Unit]
+Description=Voitures Bot - Car Listing Monitor
+After=network.target
+
+[Service]
+Type=simple
+User=alex
+Group=alex
+WorkingDirectory=/Users/alex/CascadeProjects/VOITURES/voitures-bot
+Environment="PATH=/Users/alex/CascadeProjects/VOITURES/voitures-bot/venv/bin"
+ExecStart=/Users/alex/CascadeProjects/VOITURES/voitures-bot/venv/bin/python scripts/run_prod.py --loop --interval 15
+
+# Restart policy
+Restart=always
+RestartSec=60
+
+# Logging
+StandardOutput=append:/Users/alex/CascadeProjects/VOITURES/voitures-bot/logs/bot.log
+StandardError=append:/Users/alex/CascadeProjects/VOITURES/voitures-bot/logs/bot.log
+
+# Resource limits
+MemoryMax=512M
+CPUQuota=50%
+
+[Install]
+WantedBy=multi-user.target

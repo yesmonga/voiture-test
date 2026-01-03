@@ -1,0 +1,122 @@
+<div class="bg-white rounded-lg shadow overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Score</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Véhicule</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Km</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Année</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lieu</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ajouté</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            {% for annonce in annonces %}
+            <tr class="hover:bg-gray-50 transition">
+                <!-- Score -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                    {% if annonce.score_total >= 80 %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        {{ annonce.score_total }}
+                    </span>
+                    {% elif annonce.score_total >= 60 %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                        {{ annonce.score_total }}
+                    </span>
+                    {% elif annonce.score_total >= 40 %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                        {{ annonce.score_total }}
+                    </span>
+                    {% else %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        {{ annonce.score_total }}
+                    </span>
+                    {% endif %}
+                </td>
+                
+                <!-- Véhicule -->
+                <td class="px-6 py-4">
+                    <div class="text-sm font-medium text-gray-900">{{ annonce.marque }} {{ annonce.modele }}</div>
+                    <div class="text-sm text-gray-500 truncate max-w-xs">{{ annonce.titre[:50] }}{% if annonce.titre|length > 50 %}...{% endif %}</div>
+                </td>
+                
+                <!-- Prix -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-semibold text-gray-900">{{ annonce.prix|format_price }}</div>
+                </td>
+                
+                <!-- Km -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ annonce.kilometrage|format_km }}
+                </td>
+                
+                <!-- Année -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ annonce.annee or 'N/C' }}
+                </td>
+                
+                <!-- Lieu -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ annonce.ville or '' }} ({{ annonce.departement or '?' }})
+                </td>
+                
+                <!-- Date -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ annonce.created_at|time_ago }}
+                </td>
+                
+                <!-- Actions -->
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <div class="flex space-x-2">
+                        <a href="/annonces/{{ annonce.id }}" 
+                           class="text-blue-600 hover:text-blue-900">
+                            <i data-lucide="eye" class="w-4 h-4"></i>
+                        </a>
+                        <a href="{{ annonce.url }}" target="_blank" rel="noopener"
+                           class="text-gray-600 hover:text-gray-900">
+                            <i data-lucide="external-link" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8" class="px-6 py-8 text-center text-gray-500">
+                    Aucune annonce trouvée
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<div class="flex justify-center mt-4 space-x-2">
+    {% if page > 1 %}
+    <a href="?page={{ page - 1 }}" 
+       hx-get="/annonces?page={{ page - 1 }}" hx-target="#annonces-container"
+       class="px-3 py-2 bg-white border rounded-md hover:bg-gray-50">
+        Précédent
+    </a>
+    {% endif %}
+    
+    <span class="px-3 py-2 text-gray-600">
+        Page {{ page }} / {{ total_pages }}
+    </span>
+    
+    {% if page < total_pages %}
+    <a href="?page={{ page + 1 }}"
+       hx-get="/annonces?page={{ page + 1 }}" hx-target="#annonces-container"
+       class="px-3 py-2 bg-white border rounded-md hover:bg-gray-50">
+        Suivant
+    </a>
+    {% endif %}
+</div>
+{% endif %}
+
+<script>
+    lucide.createIcons();
+</script>

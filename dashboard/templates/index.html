@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Voitures Bot{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <div class="text-sm text-gray-500">
+            Dernière mise à jour: {{ stats.last_scan|time_ago if stats.last_scan else 'N/C' }}
+        </div>
+    </div>
+    
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Total -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                    <i data-lucide="database" class="w-6 h-6"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Total annonces</p>
+                    <p class="text-2xl font-semibold text-gray-900">{{ stats.total_annonces or 0 }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Urgents -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-red-100 text-red-600">
+                    <i data-lucide="alert-circle" class="w-6 h-6"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Urgents (≥80)</p>
+                    <p class="text-2xl font-semibold text-red-600">{{ stats.urgents or 0 }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Interessants -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-orange-100 text-orange-600">
+                    <i data-lucide="star" class="w-6 h-6"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Intéressants (≥60)</p>
+                    <p class="text-2xl font-semibold text-orange-600">{{ stats.interessants or 0 }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Notifiées -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <div class="flex items-center">
+                <div class="p-3 rounded-full bg-green-100 text-green-600">
+                    <i data-lucide="bell" class="w-6 h-6"></i>
+                </div>
+                <div class="ml-4">
+                    <p class="text-sm font-medium text-gray-500">Notifiées</p>
+                    <p class="text-2xl font-semibold text-green-600">{{ stats.notifiees or 0 }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Secondary Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-sm font-medium text-gray-500 mb-2">Score moyen</h3>
+            <p class="text-3xl font-bold text-gray-900">
+                {{ "%.1f"|format(stats.score_moyen) if stats.score_moyen else 'N/C' }}
+            </p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-sm font-medium text-gray-500 mb-2">Prix moyen</h3>
+            <p class="text-3xl font-bold text-gray-900">
+                {{ stats.prix_moyen|format_price if stats.prix_moyen else 'N/C' }}
+            </p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-sm font-medium text-gray-500 mb-2">Km moyen</h3>
+            <p class="text-3xl font-bold text-gray-900">
+                {{ stats.km_moyen|format_km if stats.km_moyen else 'N/C' }}
+            </p>
+        </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Actions rapides</h2>
+        <div class="flex flex-wrap gap-3">
+            <a href="/annonces?min_score=80" 
+               class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+                <i data-lucide="zap" class="w-4 h-4 mr-2"></i>
+                Voir les urgents
+            </a>
+            <a href="/annonces?min_score=60" 
+               class="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition">
+                <i data-lucide="star" class="w-4 h-4 mr-2"></i>
+                Voir les intéressants
+            </a>
+            <a href="/annonces" 
+               class="inline-flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+                <i data-lucide="list" class="w-4 h-4 mr-2"></i>
+                Toutes les annonces
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}

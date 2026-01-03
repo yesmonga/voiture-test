@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}{{ annonce.marque }} {{ annonce.modele }} - Voitures Bot{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Back button -->
+    <a href="/annonces" class="inline-flex items-center text-gray-600 hover:text-gray-900">
+        <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i>
+        Retour aux annonces
+    </a>
+    
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex justify-between items-start">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">{{ annonce.marque }} {{ annonce.modele }}</h1>
+                <p class="text-gray-500 mt-1">{{ annonce.titre }}</p>
+            </div>
+            
+            <!-- Score Badge -->
+            <div class="text-center">
+                {% if annonce.score_total >= 80 %}
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 text-red-600">
+                    <span class="text-2xl font-bold">{{ annonce.score_total }}</span>
+                </div>
+                <div class="text-sm text-red-600 font-medium mt-1">URGENT</div>
+                {% elif annonce.score_total >= 60 %}
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-100 text-orange-600">
+                    <span class="text-2xl font-bold">{{ annonce.score_total }}</span>
+                </div>
+                <div class="text-sm text-orange-600 font-medium mt-1">INTÉRESSANT</div>
+                {% elif annonce.score_total >= 40 %}
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-100 text-yellow-600">
+                    <span class="text-2xl font-bold">{{ annonce.score_total }}</span>
+                </div>
+                <div class="text-sm text-yellow-600 font-medium mt-1">À SURVEILLER</div>
+                {% else %}
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 text-gray-600">
+                    <span class="text-2xl font-bold">{{ annonce.score_total }}</span>
+                </div>
+                <div class="text-sm text-gray-600 font-medium mt-1">ARCHIVE</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Info Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Left Column: Details -->
+        <div class="bg-white rounded-lg shadow p-6 space-y-4">
+            <h2 class="text-lg font-semibold text-gray-900 border-b pb-2">Informations</h2>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <span class="text-sm text-gray-500">Prix</span>
+                    <p class="text-xl font-bold text-green-600">{{ annonce.prix|format_price }}</p>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-500">Kilométrage</span>
+                    <p class="text-xl font-semibold text-gray-900">{{ annonce.kilometrage|format_km }}</p>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-500">Année</span>
+                    <p class="text-xl font-semibold text-gray-900">{{ annonce.annee or 'N/C' }}</p>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-500">Carburant</span>
+                    <p class="text-xl font-semibold text-gray-900">{{ annonce.carburant.value if annonce.carburant else 'N/C' }}</p>
+                </div>
+            </div>
+            
+            <div class="pt-4 border-t">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <span class="text-sm text-gray-500">Localisation</span>
+                        <p class="font-medium">{{ annonce.ville or 'N/C' }} ({{ annonce.departement or '?' }})</p>
+                    </div>
+                    <div>
+                        <span class="text-sm text-gray-500">Source</span>
+                        <p class="font-medium">{{ annonce.source.value }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm text-gray-500">Type vendeur</span>
+                        <p class="font-medium">{{ annonce.seller_type.value if annonce.seller_type else 'N/C' }}</p>
+                    </div>
+                    <div>
+                        <span class="text-sm text-gray-500">Ajouté</span>
+                        <p class="font-medium">{{ annonce.created_at|time_ago }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Column: Score Breakdown -->
+        <div class="bg-white rounded-lg shadow p-6 space-y-4">
+            <h2 class="text-lg font-semibold text-gray-900 border-b pb-2">Détail du score</h2>
+            
+            {% if annonce.score_breakdown %}
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Prix</span>
+                    <div class="text-right">
+                        <span class="font-semibold">{{ annonce.score_breakdown.prix_score }} pts</span>
+                        <p class="text-xs text-gray-500">{{ annonce.score_breakdown.prix_detail }}</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Kilométrage</span>
+                    <div class="text-right">
+                        <span class="font-semibold">{{ annonce.score_breakdown.km_score }} pts</span>
+                        <p class="text-xs text-gray-500">{{ annonce.score_breakdown.km_detail }}</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Fraîcheur</span>
+                    <div class="text-right">
+                        <span class="font-semibold">{{ annonce.score_breakdown.freshness_score }} pts</span>
+                        <p class="text-xs text-gray-500">{{ annonce.score_breakdown.freshness_detail }}</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Mots-clés</span>
+                    <div class="text-right">
+                        <span class="font-semibold">{{ annonce.score_breakdown.keywords_score }} pts</span>
+                        <p class="text-xs text-gray-500">{{ annonce.score_breakdown.keywords_detail }}</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Bonus</span>
+                    <div class="text-right">
+                        <span class="font-semibold text-green-600">+{{ annonce.score_breakdown.bonus_score }} pts</span>
+                        <p class="text-xs text-gray-500">{{ annonce.score_breakdown.bonus_detail }}</p>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Risques</span>
+                    <div class="text-right">
+                        <span class="font-semibold text-red-600">{{ annonce.score_breakdown.risk_penalty }} pts</span>
+                        <p class="text-xs text-gray-500">{{ annonce.score_breakdown.risk_detail }}</p>
+                    </div>
+                </div>
+                
+                <div class="border-t pt-3 mt-3">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-gray-900">Marge estimée</span>
+                        <span class="font-bold text-green-600">
+                            {{ annonce.score_breakdown.margin_min|format_price }} - {{ annonce.score_breakdown.margin_max|format_price }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p class="text-gray-500">Détail non disponible</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Keywords -->
+    {% if annonce.keywords_opportunite or annonce.keywords_risque %}
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 border-b pb-2 mb-4">Mots-clés détectés</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% if annonce.keywords_opportunite %}
+            <div>
+                <h3 class="text-sm font-medium text-green-600 mb-2">Opportunités</h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for kw in annonce.keywords_opportunite %}
+                    <span class="px-2 py-1 bg-green-100 text-green-700 text-sm rounded">{{ kw }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            {% if annonce.keywords_risque %}
+            <div>
+                <h3 class="text-sm font-medium text-red-600 mb-2">Risques</h3>
+                <div class="flex flex-wrap gap-2">
+                    {% for kw in annonce.keywords_risque %}
+                    <span class="px-2 py-1 bg-red-100 text-red-700 text-sm rounded">{{ kw }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Description -->
+    {% if annonce.description %}
+    <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold text-gray-900 border-b pb-2 mb-4">Description</h2>
+        <p class="text-gray-700 whitespace-pre-line">{{ annonce.description }}</p>
+    </div>
+    {% endif %}
+    
+    <!-- Actions -->
+    <div class="flex justify-between items-center">
+        <div class="text-sm text-gray-500">
+            ID: {{ annonce.id[:20] }}...
+        </div>
+        <a href="{{ annonce.url }}" target="_blank" rel="noopener"
+           class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            <i data-lucide="external-link" class="w-4 h-4 mr-2"></i>
+            Voir l'annonce originale
+        </a>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}

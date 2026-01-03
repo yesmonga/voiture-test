@@ -1,0 +1,280 @@
+# Configuration des mots-clés pour scoring
+# Séparation claire : opportunité (bonus) vs risque (pénalité + coût estimé)
+
+# Mots-clés d'opportunité : indiquent une bonne affaire potentielle
+opportunite:
+  # Urgence vendeur = négociation possible
+  urgent:
+    patterns:
+      - "urgent"
+      - "vente rapide"
+      - "doit partir"
+      - "déménagement"
+    bonus: 15
+    description: "Vendeur pressé, négociation possible"
+
+  negociable:
+    patterns:
+      - "négociable"
+      - "nego"
+      - "à débattre"
+      - "faire offre"
+      - "prix à discuter"
+      - "ouvert aux offres"
+    bonus: 12
+    description: "Prix flexible"
+
+  depart:
+    patterns:
+      - "prix de départ"
+      - "départ"
+      - "à saisir"
+    bonus: 8
+    description: "Prix de départ, marge de négociation"
+
+  ct_ok:
+    patterns:
+      - "ct ok"
+      - "controle technique ok"
+      - "ct récent"
+      - "ct recent"
+      - "ct vierge"
+      - "ct sans remarque"
+      - "ct fait"
+      - "ct valide"
+    bonus: 10
+    description: "CT valide, pas de frais à prévoir"
+
+  entretien:
+    patterns:
+      - "carnet d'entretien"
+      - "suivi"
+      - "historique complet"
+      - "factures"
+      - "entretien à jour"
+    bonus: 8
+    description: "Véhicule bien entretenu"
+
+  faible_km:
+    patterns:
+      - "faible kilométrage"
+      - "peu roulé"
+      - "peu de km"
+    bonus: 5
+    description: "Kilométrage inférieur à la moyenne"
+
+  premiere_main:
+    patterns:
+      - "première main"
+      - "1ère main"
+      - "1ere main"
+      - "unique propriétaire"
+    bonus: 8
+    description: "Un seul propriétaire"
+
+  garage:
+    patterns:
+      - "toujours garé"
+      - "garage"
+      - "jamais dehors"
+    bonus: 3
+    description: "Véhicule protégé"
+
+# Mots-clés de risque : problèmes potentiels avec coût estimé
+risque:
+  # Problèmes mécaniques majeurs
+  moteur_hs:
+    patterns:
+      - "moteur hs"
+      - "moteur cassé"
+      - "moteur à refaire"
+      - "casse moteur"
+      - "serrage moteur"
+    penalty: -50
+    cost_estimate: 2500
+    severity: "critical"
+    description: "Moteur à remplacer - très coûteux"
+
+  boite_hs:
+    patterns:
+      - "boite hs"
+      - "boîte hs"
+      - "boite à refaire"
+      - "problème boite"
+      - "boite de vitesse hs"
+    penalty: -40
+    cost_estimate: 1500
+    severity: "critical"
+    description: "Boîte de vitesses à remplacer"
+
+  turbo_hs:
+    patterns:
+      - "turbo hs"
+      - "turbo à changer"
+      - "problème turbo"
+      - "turbo cassé"
+    penalty: -25
+    cost_estimate: 800
+    severity: "major"
+    description: "Turbo à remplacer"
+
+  embrayage:
+    patterns:
+      - "embrayage à faire"
+      - "embrayage usé"
+      - "embrayage à changer"
+      - "kit embrayage"
+    penalty: -15
+    cost_estimate: 600
+    severity: "moderate"
+    description: "Embrayage à remplacer"
+
+  distribution:
+    patterns:
+      - "distribution à faire"
+      - "courroie à changer"
+      - "kit distribution"
+    penalty: -10
+    cost_estimate: 500
+    severity: "moderate"
+    description: "Distribution à faire"
+
+  # CT et réglementaire
+  ct_refuse:
+    patterns:
+      - "ct refusé"
+      - "ct refuse"
+      - "contre-visite"
+      - "contre visite"
+      - "contrevisite"
+      - "ct non passé"
+      - "ct non passe"
+    penalty: -20
+    cost_estimate: 400
+    severity: "major"
+    description: "CT refusé, réparations obligatoires"
+
+  ct_a_faire:
+    patterns:
+      - "ct à faire"
+      - "ct à passer"
+      - "sans ct"
+      - "ct périmé"
+    penalty: -8
+    cost_estimate: 150
+    severity: "minor"
+    description: "CT à passer, risque de contre-visite"
+
+  # État général
+  en_letat:
+    patterns:
+      - "en l'état"
+      - "en l etat"
+      - "vendu en l'état"
+      - "tel quel"
+    penalty: -5
+    cost_estimate: 300
+    severity: "minor"
+    description: "Vendu sans garantie, problèmes possibles"
+
+  a_reparer:
+    patterns:
+      - "à réparer"
+      - "a reparer"
+      - "pour pièces"
+      - "pour bricoleur"
+      - "mécanicien"
+    penalty: -15
+    cost_estimate: 500
+    severity: "moderate"
+    description: "Réparations nécessaires"
+
+  accident:
+    patterns:
+      - "accidenté"
+      - "accident"
+      - "choc"
+      - "sinistre"
+    penalty: -30
+    cost_estimate: 1000
+    severity: "major"
+    description: "Véhicule accidenté"
+
+  # Problèmes spécifiques
+  fap:
+    patterns:
+      - "fap"
+      - "filtre à particules"
+      - "fap bouché"
+      - "fap à nettoyer"
+    penalty: -12
+    cost_estimate: 400
+    severity: "moderate"
+    description: "Problème FAP"
+
+  injecteurs:
+    patterns:
+      - "injecteur"
+      - "injecteurs"
+      - "problème injection"
+    penalty: -15
+    cost_estimate: 600
+    severity: "moderate"
+    description: "Injecteurs à remplacer"
+
+  demarreur:
+    patterns:
+      - "démarreur"
+      - "demarreur"
+      - "ne démarre plus"
+      - "problème démarrage"
+    penalty: -8
+    cost_estimate: 250
+    severity: "minor"
+    description: "Démarreur à remplacer"
+
+  alternateur:
+    patterns:
+      - "alternateur"
+      - "problème charge"
+      - "batterie se vide"
+    penalty: -8
+    cost_estimate: 300
+    severity: "minor"
+    description: "Alternateur à remplacer"
+
+  climatisation:
+    patterns:
+      - "clim hs"
+      - "climatisation hs"
+      - "clim à recharger"
+      - "pas de clim"
+    penalty: -5
+    cost_estimate: 200
+    severity: "minor"
+    description: "Climatisation à réparer"
+
+  rouille:
+    patterns:
+      - "rouille"
+      - "corrosion"
+      - "oxydation"
+      - "bas de caisse"
+    penalty: -15
+    cost_estimate: 500
+    severity: "moderate"
+    description: "Problèmes de rouille"
+
+# Exclusions absolues : score = 0, statut = ignoré
+exclusions:
+  patterns:
+    - "epave"
+    - "épave"
+    - "non roulant"
+    - "ne roule plus"
+    - "carcasse"
+    - "destruction"
+    - "export"
+    - "marchand"
+    - "professionnel uniquement"
+  reason: "Véhicule non exploitable ou hors cible"

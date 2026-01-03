@@ -1,0 +1,44 @@
+# Requirements V2 - Production grade
+# Python 3.11+
+
+# Core
+httpx>=0.25.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
+# Async
+anyio>=4.0.0
+
+# Configuration
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-dotenv>=1.0.0
+PyYAML>=6.0.0
+
+# Database
+# SQLite built-in, pas besoin de SQLAlchemy pour l'instant
+
+# CLI
+typer>=0.9.0
+rich>=13.0.0
+
+# Browser automation (optional)
+playwright>=1.40.0
+
+# Notifications
+# httpx déjà inclus pour Discord/Telegram webhooks
+
+# Logging
+structlog>=23.2.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
+# Linting/Typing
+ruff>=0.1.0
+mypy>=1.7.0
+
+# Dev
+ipython>=8.0.0
