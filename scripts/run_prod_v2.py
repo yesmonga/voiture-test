@@ -30,10 +30,10 @@ from scrapers.rate_limiter import get_rate_limiter
 from scrapers.autoscout24_v2 import (
     AutoScout24IndexScraper, AutoScout24DetailScraper, AutoScout24Config
 )
-# LaCentrale bloqué par DataDome - désactivé pour l'instant
-# from scrapers.lacentrale_v2 import (
-#     LaCentraleIndexScraper, LaCentraleDetailScraper, LaCentraleConfig
-# )
+# LaCentrale avec cookie DataDome + proxy résidentiel
+from scrapers.lacentrale_curl import (
+    LaCentraleCurlScraper, LaCentraleCurlDetailScraper, LaCentraleConfig
+)
 # Nouveaux scrapers curl-cffi qui fonctionnent
 from scrapers.paruvendu_curl import (
     ParuVenduCurlScraper, ParuVenduCurlDetailScraper, ParuVenduConfig
@@ -163,9 +163,20 @@ def create_scrapers_for_source(source: str, search_config: dict) -> tuple:
         return index_scraper, AutoScout24DetailScraper(), Source.AUTOSCOUT24
     
     elif source_lower == "lacentrale":
-        # LaCentrale bloqué par DataDome - skip
-        print(f"   ⚠️ LaCentrale désactivé (DataDome)")
-        return None, None, None
+        config = LaCentraleConfig(
+            marque=marque,
+            modele=modele,
+            prix_min=prix_min,
+            prix_max=prix_max,
+            km_min=km_min,
+            km_max=km_max,
+            annee_min=annee_min,
+            annee_max=annee_max,
+            carburant=carburant,
+            particulier_only=particulier_only,
+        )
+        index_scraper = LaCentraleCurlScraper(config)
+        return index_scraper, LaCentraleCurlDetailScraper(), Source.LACENTRALE
     
     elif source_lower == "paruvendu":
         config = ParuVenduConfig(

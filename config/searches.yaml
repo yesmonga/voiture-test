@@ -25,13 +25,13 @@ searches:
     # Multi-sources: liste des sources à scanner
     # AutoScout24: httpx + __NEXT_DATA__ ✅
     # ParuVendu: curl-cffi ✅
-    # LeBoncoin: curl-cffi + __NEXT_DATA__ ✅
-    # LaCentrale: bloqué par DataDome ❌
+    # LeBoncoin: curl-cffi + proxy résidentiel ✅
+    # LaCentrale: curl-cffi + cookie DataDome + proxy ✅
     sources:
       - autoscout24
       - paruvendu
       - leboncoin
-      # - lacentrale  # DataDome - nécessite proxy résidentiel
+      - lacentrale
     marque: "Peugeot"
     modele: "207"
     motorisation: "1.4 hdi 70"  # Pour référence
