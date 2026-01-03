@@ -252,19 +252,20 @@ class Annonce:
     
     def _generate_fingerprint_soft(self) -> str:
         """
-        Génère un fingerprint "soft" pour détection near-duplicate.
+        Génère un fingerprint "soft" pour détection near-duplicate CROSS-SOURCE.
         
-        Moins strict que fingerprint:
-        - Ne tient pas compte du prix (peut changer)
-        - Ne tient pas compte du km exact (arrondi)
-        - Utilise uniquement marque + modèle + année + département
+        Permet de détecter la MÊME VOITURE sur différentes plateformes:
+        - Ne tient pas compte de la source
+        - Ne tient pas compte du prix (peut varier entre sources)
+        - Arrondit le km aux 10k (tolérance erreurs de saisie)
+        - Utilise: marque + modèle + année + km_arrondi + département
         
-        Permet de détecter les annonces republiquées avec modifications mineures.
+        Ex: Peugeot 207 2010 160k km 75 -> même hash sur AutoScout24 et LaCentrale
         """
         km_bucket = ""
         if self.kilometrage:
-            # Arrondir aux 50k
-            km_bucket = str((self.kilometrage // 50000) * 50000)
+            # Arrondir aux 10k pour tolérer les erreurs de saisie
+            km_bucket = str((self.kilometrage // 10000) * 10000)
         
         data = "|".join([
             self._normalize(self.marque),

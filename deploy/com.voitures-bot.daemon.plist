@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.voitures-bot.daemon</string>
+    
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/env</string>
+        <string>python3</string>
+        <string>scripts/run_daemon.py</string>
+    </array>
+    
+    <key>WorkingDirectory</key>
+    <string>/Users/alex/CascadeProjects/VOITURES/voitures-bot</string>
+    
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PYTHONPATH</key>
+        <string>/Users/alex/CascadeProjects/VOITURES/voitures-bot</string>
+        <!-- DISCORD_WEBHOOK_URL à définir via launchctl setenv -->
+    </dict>
+    
+    <key>RunAtLoad</key>
+    <true/>
+    
+    <key>KeepAlive</key>
+    <dict>
+        <key>SuccessfulExit</key>
+        <false/>
+    </dict>
+    
+    <key>StandardOutPath</key>
+    <string>/Users/alex/CascadeProjects/VOITURES/voitures-bot/logs/daemon.stdout.log</string>
+    
+    <key>StandardErrorPath</key>
+    <string>/Users/alex/CascadeProjects/VOITURES/voitures-bot/logs/daemon.stderr.log</string>
+    
+    <key>ThrottleInterval</key>
+    <integer>60</integer>
+</dict>
+</plist>
