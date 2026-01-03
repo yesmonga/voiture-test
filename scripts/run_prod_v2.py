@@ -30,14 +30,16 @@ from scrapers.rate_limiter import get_rate_limiter
 from scrapers.autoscout24_v2 import (
     AutoScout24IndexScraper, AutoScout24DetailScraper, AutoScout24Config
 )
-from scrapers.lacentrale_v2 import (
-    LaCentraleIndexScraper, LaCentraleDetailScraper, LaCentraleConfig
+# LaCentrale bloqué par DataDome - désactivé pour l'instant
+# from scrapers.lacentrale_v2 import (
+#     LaCentraleIndexScraper, LaCentraleDetailScraper, LaCentraleConfig
+# )
+# Nouveaux scrapers curl-cffi qui fonctionnent
+from scrapers.paruvendu_curl import (
+    ParuVenduCurlScraper, ParuVenduCurlDetailScraper, ParuVenduConfig
 )
-from scrapers.paruvendu_v2 import (
-    ParuVenduIndexScraper, ParuVenduDetailScraper, ParuVenduConfig
-)
-from scrapers.leboncoin_v1 import (
-    LeboncoinIndexScraper, LeboncoinDetailScraper, LeboncoinConfig
+from scrapers.leboncoin_curl import (
+    LeboncoinCurlScraper, LeboncoinCurlDetailScraper, LeboncoinConfig
 )
 from scrapers.http_client import close_all_clients
 
@@ -161,22 +163,9 @@ def create_scrapers_for_source(source: str, search_config: dict) -> tuple:
         return index_scraper, AutoScout24DetailScraper(), Source.AUTOSCOUT24
     
     elif source_lower == "lacentrale":
-        config = LaCentraleConfig(
-            marque=marque,
-            modele=modele,
-            prix_min=prix_min,
-            prix_max=prix_max,
-            km_min=km_min,
-            km_max=km_max,
-            annee_min=annee_min,
-            annee_max=annee_max,
-            carburant=carburant,
-            particulier_only=particulier_only,
-        )
-        index_scraper = LaCentraleIndexScraper(config)
-        index_scraper._fallback_marque = search_config.get("marque", "")
-        index_scraper._fallback_modele = modele
-        return index_scraper, LaCentraleDetailScraper(), Source.LACENTRALE
+        # LaCentrale bloqué par DataDome - skip
+        print(f"   ⚠️ LaCentrale désactivé (DataDome)")
+        return None, None, None
     
     elif source_lower == "paruvendu":
         config = ParuVenduConfig(
@@ -191,10 +180,8 @@ def create_scrapers_for_source(source: str, search_config: dict) -> tuple:
             carburant=carburant,
             particulier_only=particulier_only,
         )
-        index_scraper = ParuVenduIndexScraper(config)
-        index_scraper._fallback_marque = search_config.get("marque", "")
-        index_scraper._fallback_modele = modele
-        return index_scraper, ParuVenduDetailScraper(), Source.PARUVENDU
+        index_scraper = ParuVenduCurlScraper(config)
+        return index_scraper, ParuVenduCurlDetailScraper(), Source.PARUVENDU
     
     elif source_lower == "leboncoin":
         config = LeboncoinConfig(
@@ -209,10 +196,8 @@ def create_scrapers_for_source(source: str, search_config: dict) -> tuple:
             carburant=carburant,
             particulier_only=particulier_only,
         )
-        index_scraper = LeboncoinIndexScraper(config)
-        index_scraper._fallback_marque = search_config.get("marque", "")
-        index_scraper._fallback_modele = modele
-        return index_scraper, LeboncoinDetailScraper(), Source.LEBONCOIN
+        index_scraper = LeboncoinCurlScraper(config)
+        return index_scraper, LeboncoinCurlDetailScraper(), Source.LEBONCOIN
     
     else:
         raise ValueError(f"Source non supportée: {source}")

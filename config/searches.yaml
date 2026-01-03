@@ -23,11 +23,15 @@ searches:
   - name: "peugeot_207_14_hdi_70"
     enabled: true
     # Multi-sources: liste des sources à scanner
-    # Note: lacentrale/paruvendu nécessitent Playwright (JS rendering)
+    # AutoScout24: httpx + __NEXT_DATA__ ✅
+    # ParuVendu: curl-cffi ✅
+    # LeBoncoin: curl-cffi + __NEXT_DATA__ ✅
+    # LaCentrale: bloqué par DataDome ❌
     sources:
       - autoscout24
-      # - lacentrale  # TODO: Playwright
-      # - paruvendu   # TODO: Playwright
+      - paruvendu
+      - leboncoin
+      # - lacentrale  # DataDome - nécessite proxy résidentiel
     marque: "Peugeot"
     modele: "207"
     motorisation: "1.4 hdi 70"  # Pour référence
